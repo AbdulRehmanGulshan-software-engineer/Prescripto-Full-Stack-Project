@@ -82,6 +82,121 @@ export const specialityData = [
     {
         speciality: 'Gastroenterologist',
         image: Gastroenterologist
+    }, {
+        speciality: 'Orthopedic',
+        image: General_physician
+    },
+    {
+        speciality: 'Ophthalmologist',
+        image: General_physician
+    },
+    {
+        speciality: 'Psychiatrist',
+        image: General_physician
+    },
+    {
+        speciality: 'Urologist',
+        image: General_physician
+    },
+    {
+        speciality: 'Nephrologist',
+        image: General_physician
+    },
+    {
+        speciality: 'Endocrinologist',
+        image: General_physician
+    },
+    {
+        speciality: 'Oncologist',
+        image: General_physician
+    },
+    {
+        speciality: 'Pulmonologist',
+        image: General_physician
+    },
+    {
+        speciality: 'Rheumatologist',
+        image: General_physician
+    },
+    {
+        speciality: 'ENT Specialist',
+        image: General_physician
+    },
+    {
+        speciality: 'Anesthesiologist',
+        image: General_physician
+    },
+    {
+        speciality: 'Radiologist',
+        image: General_physician
+    },
+    {
+        speciality: 'Pathologist',
+        image: General_physician
+    },
+    {
+        speciality: 'Hematologist',
+        image: General_physician
+    },
+    {
+        speciality: 'Immunologist',
+        image: General_physician
+    },
+    {
+        speciality: 'Plastic Surgeon',
+        image: General_physician
+    },
+    {
+        speciality: 'Neurosurgeon',
+        image: General_physician
+    },
+    {
+        speciality: 'Cardiothoracic Surgeon',
+        image: General_physician
+    },
+    {
+        speciality: 'Emergency Medicine',
+        image: General_physician
+    },
+    {
+        speciality: 'Family Medicine',
+        image: General_physician
+    },
+    {
+        speciality: 'Sports Medicine',
+        image: General_physician
+    },
+    {
+        speciality: 'Pain Management',
+        image: General_physician
+    },
+    {
+        speciality: 'Infectious Disease',
+        image: General_physician
+    },
+    {
+        speciality: 'Allergist',
+        image: General_physician
+    },
+    {
+        speciality: 'Geriatrician',
+        image: General_physician
+    },
+    {
+        speciality: 'Sleep Medicine',
+        image: General_physician
+    },
+    {
+        speciality: 'Occupational Medicine',
+        image: General_physician
+    },
+    {
+        speciality: 'Rehabilitation Medicine',
+        image: General_physician
+    },
+    {
+        speciality: 'Critical Care',
+        image: General_physician
     },
 ]
 
@@ -297,3 +412,13 @@ export const doctors = [
         }
     },
 ]
+
+export const userData = {
+    image: about_image,
+    name: "Edward Vincent",
+    email: "richardjameswap@gmail.com",
+    phone: "+1 123 456 7890",
+    address: "57th Cross, Richmond Circle, Church Road, London",
+    gender: "Male",
+    dob: "20 July 2024",
+}

@@ -1,23 +1,73 @@
-// We can access the common logiv from this file
+// Global Context
+// This file stores data that can be accessed from anywhere in the app.
 
-import { createContext } from "react";
-import { doctors } from "../assets/assets";
+// React
+import { createContext, useState, useEffect } from "react";
+
+// Dummy Data
+import { doctors, specialityData, userData } from "../assets/assets";
+
+// import axios from "axios"; // Uncomment when backend is ready
 
 export const AppContext = createContext();
 
-// context provider function
-const AppContextProvider = (props) => {
+// Context Provider
+const AppContextProvider = ({ children }) => {
+
+  // ------------------------------------
+  // USER STATE
+  // ------------------------------------
+  // Currently using dummy data.
+  // Later this state will be filled by GET API.
+  const [user, setUser] = useState(userData);
+
+  /*
+  ==================================================
+
+  LATER WHEN BACKEND IS READY
+
+  useEffect(() => {
+
+      const fetchUser = async () => {
+
+          try {
+
+              const { data } = await axios.get("/api/user/profile");
+
+              setUser(data);
+
+          }
+
+          catch(error){
+
+              console.log(error);
+
+          }
+
+      }
+
+      fetchUser();
+
+  }, []);
+
+  ==================================================
+  */
+
+  // Global values available throughout the application
   const value = {
     doctors,
+    specialityData,
+
+    // User
+    user,
+    setUser,
   };
 
-  return(
+  return (
     <AppContext.Provider value={value}>
-        {props.children}
+      {children}
     </AppContext.Provider>
-  ) 
-}
+  );
+};
 
-export default AppContextProvider
-
-// next we will add context support in our project(in main.jsx)
+export default AppContextProvider;

@@ -11,11 +11,18 @@ import Appointment from "./pages/Appointment";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Policy from "./components/Policy";
+import ScrollToTop from "./components/ScrollToTop";
+import EditProfile from "./pages/EditProfile";
+
 
 const App = () => {
   return (
     <div className="mx-4 sm:mx-[10%]">
+      <ScrollToTop />
       <Navbar />
+      {/* Navbar height */}
+      <div className="h-25"></div>
+
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/doctors" element={<Doctors />} />
@@ -27,6 +34,7 @@ const App = () => {
         <Route path="/my-appointments" element={<MyAppointments />} />
         <Route path="/appointments/:docId" element={<Appointment />} />
         <Route path="/policy" element={<Policy />} />
+        <Route path="/edit-profile" element={<EditProfile />} />
       </Routes>
       <Footer />
     </div>

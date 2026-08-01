@@ -4,25 +4,55 @@ import { Link } from "react-router-dom";
 
 const SpecialityMenu = () => {
   return (
-    <div id="speciality" className="flex flex-col items-center gap-4 py-16 text-gray-800">
+    <section
+      id="speciality"
+      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-gray-800"
+    >
       {/* Title */}
-      <h1 className="text-3xl font-medium">Find By Speciality</h1>
+      <div className="text-center">
+        <h1 className="text-3xl font-medium">Find By Speciality</h1>
 
-      {/* Paragraph*/}
-      <p className="sm:w-2/4 text-center text-sm">
-        Simply browse through our extensive list of trusted doctors,schedule your appointment hassle-free
-      </p>
+        <p className="mt-3 max-w-2xl mx-auto text-sm text-gray-600">
+          Simply browse through our extensive list of trusted doctors and
+          schedule your appointment hassle-free.
+        </p>
+      </div>
 
-      {/* icons */}
-      <div className="flex sm:justify-center gap-4 pt-5 w-full overflow-scroll">
-        {specialityData.map((item, index) => (
-          <Link onClick={()=>scrollTo(0,0)} className="flex flex-col items-center text-xs cursor-pointer flex-shrink-0 hover:translate-y-[-10px] transition-all duration-500" key={index} to={`/doctors/${item.speciality}`}>
-            <img src={item.image} alt="Doctor's speciality image" />
-            <p>{item.speciality}</p>
+      {/* Specialities */}
+      <div className="mt-10 flex flex-wrap justify-center gap-8">
+        {specialityData.slice(0, 8).map((item, index) => (
+          <Link
+            key={index}
+            to={`/doctors/${item.speciality}`}
+            onClick={() => scrollTo(0, 0)}
+            className="flex w-24 flex-col items-center text-center transition-transform duration-300 hover:-translate-y-2"
+          >
+            <img
+              src={item.image}
+              alt={item.speciality}
+              className="w-16 h-16 object-contain"
+            />
+            <p className="mt-3 text-xs font-medium">{item.speciality}</p>
           </Link>
         ))}
       </div>
-    </div>
+
+      {/* View All */}
+      <div className="mt-10 text-center">
+        <Link
+          to="/doctors"
+          onClick={() =>
+            window.scrollTo({
+              top: 0,
+              behavior: "smooth",
+            })
+          }
+          className="inline-flex rounded-full bg-indigo-100 px-6 py-3 text-sm font-medium text-indigo-700 transition hover:bg-indigo-200"
+        >
+          View All Specialities
+        </Link>
+      </div>
+    </section>
   );
 };
 
