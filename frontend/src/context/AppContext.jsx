@@ -53,11 +53,13 @@ const AppContextProvider = ({ children }) => {
   ==================================================
   */
 
+  const currencySymbol = '$'
+
   // Global values available throughout the application
   const value = {
     doctors,
     specialityData,
-
+    currencySymbol,
     // User
     user,
     setUser,
