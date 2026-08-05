@@ -13,6 +13,7 @@ import Footer from "./components/Footer";
 import Policy from "./components/Policy";
 import ScrollToTop from "./components/ScrollToTop";
 import EditProfile from "./pages/EditProfile";
+import Register from "./pages/Register";
 
 
 const App = () => {
@@ -35,6 +36,7 @@ const App = () => {
         <Route path="/appointments/:docId" element={<Appointment />} />
         <Route path="/policy" element={<Policy />} />
         <Route path="/edit-profile" element={<EditProfile />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
       <Footer />
     </div>

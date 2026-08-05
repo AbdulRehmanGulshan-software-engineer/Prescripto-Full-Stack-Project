@@ -1,30 +1,53 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { AppContext } from "../context/AppContext";
+
+import { useApp } from "../context/useApp";
+
 import DoctorCard from "../components/DoctorCard";
 import FilterSidebar from "../components/FilterSidebar";
 import EmptyState from "../components/EmptyState";
 
 const Doctors = () => {
-  const { speciality } = useParams();
-  const [filterDoc, setFilterDoc] = useState([]);
-  const { doctors, specialityData } = useContext(AppContext);
   const navigate = useNavigate();
+
+  const { speciality } = useParams();
+
+  const { doctors, specialityData } = useApp();
+
   const [search, setSearch] = useState("");
 
-  useEffect(() => {
+  // Filter Doctors
+  const filteredDoctors = useMemo(() => {
+    let filtered = doctors;
+
+    // Filter By Speciality
+
     if (speciality) {
-      setFilterDoc(doctors.filter((doc) => doc.speciality === speciality));
-    } else {
-      setFilterDoc(doctors);
+      filtered = filtered.filter(
+        (doctor) => doctor.speciality === speciality
+      );
     }
-  }, [doctors, speciality]);
+
+    // Future
+
+    // Search Filter
+
+    if (search.trim()) {
+      filtered = filtered.filter((doctor) =>
+        doctor.name.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    return filtered;
+  }, [doctors, speciality, search]);
 
   return (
-    <div>
-      <p className="text-gray-600">Browse through the doctors specialist.</p>
+    <section>
+      <p className="text-gray-600">
+        Browse through the doctors specialist.
+      </p>
 
-      <div className="flex flex-col sm:flex-row items-start gap-5 mt-5">
+      <div className="mt-5 flex flex-col items-start gap-5 sm:flex-row">
         <FilterSidebar
           specialityData={specialityData}
           speciality={speciality}
@@ -34,21 +57,24 @@ const Doctors = () => {
         />
 
         <div className="w-full">
-          {filterDoc.length > 0 ? (
+          {filteredDoctors.length ? (
             <div className="grid grid-cols-auto gap-4 gap-y-6">
-              {filterDoc.map((item) => (
-                <DoctorCard key={item._id} item={item} />
+              {filteredDoctors.map((doctor) => (
+                <DoctorCard
+                  key={doctor._id}
+                  item={doctor}
+                />
               ))}
             </div>
           ) : (
             <EmptyState
               title="No Doctors Available"
-              message="There are no doctors for the selected speciality."
+              message="There are no doctors available for the selected speciality."
             />
           )}
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

@@ -1,75 +1,48 @@
-// Global Context
-// This file stores data that can be accessed from anywhere in the app.
+import { createContext, useState } from "react";
 
-// React
-import { createContext, useState, useEffect } from "react";
+import {
+    doctors as dummyDoctors,
+    specialityData
+} from "../assets/assets";
 
-// Dummy Data
-import { doctors, specialityData, userData } from "../assets/assets";
+export const AppContext=createContext();
 
-// import axios from "axios"; // Uncomment when backend is ready
+const AppContextProvider=({children})=>{
 
-export const AppContext = createContext();
+    // Global App States
+    const [doctors,setDoctors]=useState(dummyDoctors);
+    const currencySymbol="$";
 
-// Context Provider
-const AppContextProvider = ({ children }) => {
+    // Future
+    // Load Doctors API
+    const loadDoctors=async()=>{
+        try{
+            // Future
 
-  // ------------------------------------
-  // USER STATE
-  // ------------------------------------
-  // Currently using dummy data.
-  // Later this state will be filled by GET API.
-  const [user, setUser] = useState(userData);
+            // const data=await getDoctors();
+            // setDoctors(data);
+        }
+        catch(error){
+            console.log(error);
 
-  /*
-  ==================================================
+            // future
+            // throw error;
+        }
+    }
 
-  LATER WHEN BACKEND IS READY
+    const value={
+        currencySymbol,
+        doctors,
+        setDoctors,
+        specialityData,
+        loadDoctors
+    }
 
-  useEffect(() => {
-
-      const fetchUser = async () => {
-
-          try {
-
-              const { data } = await axios.get("/api/user/profile");
-
-              setUser(data);
-
-          }
-
-          catch(error){
-
-              console.log(error);
-
-          }
-
-      }
-
-      fetchUser();
-
-  }, []);
-
-  ==================================================
-  */
-
-  const currencySymbol = '$'
-
-  // Global values available throughout the application
-  const value = {
-    doctors,
-    specialityData,
-    currencySymbol,
-    // User
-    user,
-    setUser,
-  };
-
-  return (
-    <AppContext.Provider value={value}>
-      {children}
-    </AppContext.Provider>
-  );
-};
+    return(
+        <AppContext.Provider value={value}>
+            {children}
+        </AppContext.Provider>
+    )
+}
 
 export default AppContextProvider;

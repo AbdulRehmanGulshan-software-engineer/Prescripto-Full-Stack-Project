@@ -422,3 +422,20 @@ export const userData = {
     gender: "Male",
     dob: "20 July 2024",
 }
+
+export const dummyAppointments = [
+    {
+        _id: "1",
+        doctor: doctors[0],
+        date: "15 Aug 2026",
+        time: "10:30 AM",
+        paymentStatus: "Pending",
+    },
+    {
+        _id: "2",
+        doctor: doctors[1],
+        date: "18 Aug 2026",
+        time: "2:00 PM",
+        paymentStatus: "Paid",
+    },
+];

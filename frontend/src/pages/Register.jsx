@@ -4,44 +4,49 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { loginSchema } from "../schemas/loginSchema";
+import { registerSchema } from "../schemas/registerSchema";
+import PasswordStrength from "../components/PasswordStrength";
 import { useAuth } from "../context/useAuth";
 
-const Login = () => {
+const Register = () => {
   const navigate = useNavigate();
 
-  const { login } = useAuth();
+  const { register: registerAccount } = useAuth();
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    watch,
     reset,
+    formState: { errors, isSubmitting },
   } = useForm({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(registerSchema),
 
     mode: "onTouched",
 
     defaultValues: {
+      name: "",
       email: "",
       password: "",
     },
   });
 
+  // Watch Password
+  const password = watch("password");
+
   // Submit Form
   const onSubmit = async (formData) => {
     try {
-      await login(formData);
+      await registerAccount(formData);
 
-      console.log("Login Successful");
+      console.log("Registration Successful");
 
       reset();
 
       // Future
 
-      // toast.success("Welcome Back");
-
-      // navigate("/");
+      // toast.success("Account Created Successfully");
+      // navigate("/login");
     } catch (error) {
       console.error(error);
 
@@ -55,21 +60,50 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg space-y-5"
+        className="w-full max-w-md space-y-5 rounded-xl bg-white p-8 shadow-lg"
       >
-        {/* ================= Header ================= */}
+        {/* ========================= Header ========================= */}
 
         <div>
           <h1 className="text-3xl font-bold text-gray-800">
-            Welcome Back
+            Create Account
           </h1>
 
           <p className="mt-1 text-gray-500">
-            Login to continue.
+            Please sign up to book an appointment.
           </p>
         </div>
 
-        {/* ================= Email ================= */}
+        {/* ========================= Name ========================= */}
+
+        <div>
+          <label
+            htmlFor="name"
+            className="mb-2 block font-medium text-gray-700"
+          >
+            Full Name
+          </label>
+
+          <input
+            id="name"
+            type="text"
+            placeholder="John Doe"
+            {...register("name")}
+            className={`w-full rounded-lg border px-4 py-2 outline-none transition ${
+              errors.name
+                ? "border-red-500 focus:ring-2 focus:ring-red-300"
+                : "border-gray-300 focus:ring-2 focus:ring-blue-400"
+            }`}
+          />
+
+          {errors.name && (
+            <p className="mt-1 text-sm text-red-500">
+              {errors.name.message}
+            </p>
+          )}
+        </div>
+
+        {/* ========================= Email ========================= */}
 
         <div>
           <label
@@ -98,7 +132,7 @@ const Login = () => {
           )}
         </div>
 
-        {/* ================= Password ================= */}
+        {/* ========================= Password ========================= */}
 
         <div>
           <label
@@ -120,6 +154,8 @@ const Login = () => {
             }`}
           />
 
+          <PasswordStrength password={password} />
+
           {errors.password && (
             <p className="mt-1 text-sm text-red-500">
               {errors.password.message}
@@ -127,38 +163,26 @@ const Login = () => {
           )}
         </div>
 
-        {/* ================= Forgot Password ================= */}
-
-        <div className="flex justify-end">
-          <button
-            type="button"
-            className="text-sm text-blue-600 hover:underline"
-            onClick={() => navigate("/forgot-password")}
-          >
-            Forgot Password?
-          </button>
-        </div>
-
-        {/* ================= Submit ================= */}
+        {/* ========================= Submit ========================= */}
 
         <button
           type="submit"
           disabled={isSubmitting}
           className="w-full rounded-lg bg-blue-600 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isSubmitting ? "Signing In..." : "Login"}
+          {isSubmitting ? "Creating..." : "Create Account"}
         </button>
 
-        {/* ================= Register ================= */}
+        {/* ========================= Login ========================= */}
 
         <p className="text-center text-gray-600">
-          Don't have an account?{" "}
+          Already have an account?{" "}
           <button
             type="button"
-            onClick={() => navigate("/register")}
+            onClick={() => navigate("/login")}
             className="font-semibold text-blue-600 hover:underline"
           >
-            Create Account
+            Login here
           </button>
         </p>
       </form>
@@ -166,4 +190,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
