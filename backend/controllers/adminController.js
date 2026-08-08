@@ -90,6 +90,7 @@ const loginAdmin = async (req, res) => {
                 success: true,
                 token
             })
+            console.log("Request Accepted From Frontend")
         }
         else {
             res.json({
