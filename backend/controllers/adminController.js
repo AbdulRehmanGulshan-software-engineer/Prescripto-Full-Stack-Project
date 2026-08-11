@@ -107,4 +107,50 @@ const loginAdmin = async (req, res) => {
     }
 }
 
-export { addDoctor, loginAdmin }
+// Page based Pagination API controller function to get al doctors list for admin panel
+const allDoctors = async (req, res) => {
+    try {
+
+        // take page and limit from req
+        const page = parseInt(req.query.page) || 1
+        const limit = parseInt(req.query.limit) || 10
+
+        // calculate doctors to skip
+        const skip = (page - 1) * limit
+
+        // get required doctors from database
+        const doctors = await doctorModel
+            .find({})
+            .select('-password')
+            .skip(skip)
+            .limit(limit)
+
+        // count available doctors
+        const totalDoctors = await doctorModel.countDocuments({})
+
+        // calculate total pages
+        const totalPages = Math.ceil(totalDoctors / limit)
+
+        // calculate does we have more doctors
+        const hasMore = page < totalPages
+
+        // send response
+        res.json({
+            success: true,
+            doctors,
+            currentPage: page,
+            totalPages,
+            totalDoctors,
+            hasMore
+        })
+    } catch (error) {
+        console.error(error)
+
+        res.status(500).json({
+            message: false,
+            message: error.message
+        })
+    }
+}
+
+export { addDoctor, loginAdmin, allDoctors }

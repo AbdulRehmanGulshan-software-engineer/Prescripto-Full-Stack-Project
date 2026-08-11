@@ -16,11 +16,13 @@ const App = () => {
   const { aToken } = useContext(AdminContext);
 
   return aToken ? (
-    <div className="bg-[#f8f9fd]">
+    <div className="bg-[#f8f9fd] min-h-screen">
       <ToastContainer />
       <Navbar />
-      <div className="flex items-start">
+
+      <div className="flex items-start pt-[73px]">
         <Sidebar />
+
         <Routes>
           <Route path="/" element={<></>} />
           <Route path="/admin-dashboard" element={<Dashboard />} />
