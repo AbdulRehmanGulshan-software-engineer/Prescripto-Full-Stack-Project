@@ -1,0 +1,1 @@
+Purpose of hooks folder: Aapke React UI components se logic aur state handling ko baahar nikal kar reusable banana.

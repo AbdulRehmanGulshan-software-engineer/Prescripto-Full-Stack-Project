@@ -1,0 +1,1 @@
+Purpose Of Services Folder: Aapke network API calls (ya data fetching) ko UI component se bilkul alag rakhna.

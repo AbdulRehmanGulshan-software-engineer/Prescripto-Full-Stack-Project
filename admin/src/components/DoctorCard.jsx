@@ -1,20 +1,29 @@
-const DoctorCard = ({ doctor }) => {
+const DoctorCard = ({ doctor, onAvailabilityChange }) => {
   return (
-    <div className="overflow-hidden rounded-lg border bg-white">
+    <div className="border border-indigo-200 rounded-xl max-w-56 overflow-hidden cursor-pointer group">
       <img
+        className="bg-indigo-50 group-hover:bg-primary transition-all duration-500"
         src={doctor.image}
-        alt={doctor.name}
-        className="h-40 w-full object-cover"
+        alt=""
       />
 
-      <div className="px-2.5 py-2">
-        <h3 className="truncate text-[13px] font-medium text-[#1f2937]">
-          {doctor.name}
-        </h3>
+      <div className="p-4">
+        <p className="text-neutral-800 text-lg font-medium">{doctor.name}</p>
 
-        <p className="truncate text-[10px] text-[#4b5563]">
-          {doctor.speciality}
-        </p>
+        <p className="text-zinc-600 text-sm">{doctor.speciality}</p>
+
+        <div className="mt-2 flex items-center gap-1 text-sm">
+          <input
+            type="checkbox"
+            checked={doctor.available}
+            onChange={() => {
+              console.log("CLICKED:", doctor._id);
+              onAvailabilityChange(doctor._id);
+            }}
+          />
+
+          <p>Available</p>
+        </div>
       </div>
     </div>
   );

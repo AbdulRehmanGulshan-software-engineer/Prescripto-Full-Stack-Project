@@ -147,7 +147,7 @@ const allDoctors = async (req, res) => {
         console.error(error)
 
         res.status(500).json({
-            message: false,
+            success: false,
             message: error.message
         })
     }
