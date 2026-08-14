@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { loginSchema } from "../schemas/loginSchema";
 import { useAuth } from "../context/useAuth";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -31,23 +32,20 @@ const Login = () => {
   // Submit Form
   const onSubmit = async (formData) => {
     try {
-      await login(formData);
+      const data = await login(formData);
 
-      console.log("Login Successful");
+      toast.success("Login successful!");
+
+      // console.log("Login Successful:", data);
 
       reset();
 
       // Future
-
-      // toast.success("Welcome Back");
-
       // navigate("/");
     } catch (error) {
       console.error(error);
 
-      // Future
-
-      // toast.error(error.response?.data?.message);
+      toast.error(error.message || "Login failed");
     }
   };
 
@@ -60,13 +58,9 @@ const Login = () => {
         {/* ================= Header ================= */}
 
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">
-            Welcome Back
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-800">Welcome Back</h1>
 
-          <p className="mt-1 text-gray-500">
-            Login to continue.
-          </p>
+          <p className="mt-1 text-gray-500">Login to continue.</p>
         </div>
 
         {/* ================= Email ================= */}
@@ -92,9 +86,7 @@ const Login = () => {
           />
 
           {errors.email && (
-            <p className="mt-1 text-sm text-red-500">
-              {errors.email.message}
-            </p>
+            <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>
           )}
         </div>
 

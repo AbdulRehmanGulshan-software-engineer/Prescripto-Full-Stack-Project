@@ -1,13 +1,27 @@
 import React, { useState } from "react";
 import { assets } from "../assets/assets";
 import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/useAuth";
 
 const Navbar = () => {
   const navigate = useNavigate();
 
-  const [token, setToken] = useState(true);
+  // User authentication state/actions
+  const { token, logout } = useAuth();
+
   const [showMenu, setShowMenu] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  // ==========================================================
+  // Logout
+  // ==========================================================
+
+  const handleLogout = () => {
+    logout();
+
+    // Optional: redirect user to login page
+    navigate("/login");
+  };
 
   return (
     <nav
@@ -31,6 +45,7 @@ const Navbar = () => {
               {({ isActive }) => (
                 <div className="flex flex-col items-center gap-1">
                   <li>HOME</li>
+
                   {isActive && (
                     <hr className="w-2/3 border-none h-0.5 bg-primary rounded-full" />
                   )}
@@ -42,6 +57,7 @@ const Navbar = () => {
               {({ isActive }) => (
                 <div className="flex flex-col items-center gap-1">
                   <li>ALL DOCTORS</li>
+
                   {isActive && (
                     <hr className="w-2/3 border-none h-0.5 bg-primary rounded-full" />
                   )}
@@ -53,6 +69,7 @@ const Navbar = () => {
               {({ isActive }) => (
                 <div className="flex flex-col items-center gap-1">
                   <li>ABOUT</li>
+
                   {isActive && (
                     <hr className="w-2/3 border-none h-0.5 bg-primary rounded-full" />
                   )}
@@ -64,6 +81,7 @@ const Navbar = () => {
               {({ isActive }) => (
                 <div className="flex flex-col items-center gap-1">
                   <li>CONTACT</li>
+
                   {isActive && (
                     <hr className="w-2/3 border-none h-0.5 bg-primary rounded-full" />
                   )}
@@ -74,7 +92,10 @@ const Navbar = () => {
 
           {/* Right Side */}
           <div className="flex items-center">
-            {/* Desktop */}
+            {/* ==================================================
+                Desktop
+            ================================================== */}
+
             <div className="hidden md:flex items-center gap-4">
               {token ? (
                 <div className="relative group flex items-center gap-2 cursor-pointer">
@@ -108,7 +129,7 @@ const Navbar = () => {
 
                       <p
                         className="cursor-pointer hover:text-black"
-                        onClick={() => setToken(false)}
+                        onClick={handleLogout}
                       >
                         Logout
                       </p>
@@ -125,7 +146,10 @@ const Navbar = () => {
               )}
             </div>
 
-            {/* Mobile */}
+            {/* ==================================================
+                Mobile
+            ================================================== */}
+
             <div className="md:hidden flex items-center gap-3">
               {token ? (
                 <div className="relative">
@@ -134,16 +158,10 @@ const Navbar = () => {
                       src={assets.profile_pic}
                       className="w-8 rounded-full cursor-pointer"
                       alt="Profile"
-                      onClick={() =>
-                        setShowProfileMenu(!showProfileMenu)
-                      }
+                      onClick={() => setShowProfileMenu(!showProfileMenu)}
                     />
 
-                    <img
-                      src={assets.dropdown_icon}
-                      alt=""
-                      className="w-2.5"
-                    />
+                    <img src={assets.dropdown_icon} alt="" className="w-2.5" />
                   </div>
 
                   {showProfileMenu && (
@@ -170,7 +188,7 @@ const Navbar = () => {
 
                       <p
                         onClick={() => {
-                          setToken(false);
+                          handleLogout();
                           setShowProfileMenu(false);
                         }}
                         className="cursor-pointer hover:text-black"
@@ -200,7 +218,10 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* ======================================================
+          Mobile Menu
+      ====================================================== */}
+
       {showMenu && (
         <div className="fixed inset-0 bg-white z-50">
           <div className="mx-4 sm:mx-[10%]">

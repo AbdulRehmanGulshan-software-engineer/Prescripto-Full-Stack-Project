@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { toast } from "react-toastify";
+
 import { registerSchema } from "../schemas/registerSchema";
 import PasswordStrength from "../components/PasswordStrength";
 import { useAuth } from "../context/useAuth";
@@ -34,25 +36,56 @@ const Register = () => {
   // Watch Password
   const password = watch("password");
 
+  // ==========================================================
   // Submit Form
+  // ==========================================================
+
   const onSubmit = async (formData) => {
     try {
+      // Call register API through AuthContext
       await registerAccount(formData);
 
-      console.log("Registration Successful");
+      // Show success message
+      toast.success("Account created successfully!");
 
+      // Reset form
       reset();
 
-      // Future
-
-      // toast.success("Account Created Successfully");
+      // ======================================================
+      // FUTURE:
+      //
+      // After successful registration:
+      //
       // navigate("/login");
+      //
+      // Or if registration automatically logs the user in:
+      //
+      // navigate("/");
+      // ======================================================
     } catch (error) {
-      console.error(error);
+      console.error("Registration Error:", error);
 
-      // Future
+      // ======================================================
+      // Backend response example:
+      //
+      // {
+      //   success: false,
+      //   message: "User already exists"
+      // }
+      //
+      // AuthContext throws:
+      //
+      // new Error(data.message)
+      //
+      // Therefore error.message will contain the backend
+      // message.
+      // ======================================================
 
-      // toast.error(error.response?.data?.message);
+      toast.error(
+        error.message ||
+          error.response?.data?.message ||
+          "Registration failed. Please try again.",
+      );
     }
   };
 
@@ -65,9 +98,7 @@ const Register = () => {
         {/* ========================= Header ========================= */}
 
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">
-            Create Account
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-800">Create Account</h1>
 
           <p className="mt-1 text-gray-500">
             Please sign up to book an appointment.
@@ -97,9 +128,7 @@ const Register = () => {
           />
 
           {errors.name && (
-            <p className="mt-1 text-sm text-red-500">
-              {errors.name.message}
-            </p>
+            <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
           )}
         </div>
 
@@ -126,9 +155,7 @@ const Register = () => {
           />
 
           {errors.email && (
-            <p className="mt-1 text-sm text-red-500">
-              {errors.email.message}
-            </p>
+            <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>
           )}
         </div>
 

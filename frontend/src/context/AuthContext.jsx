@@ -3,13 +3,10 @@ import { createContext, useEffect, useState } from "react";
 import { userData } from "../assets/assets";
 
 import { getUserAppointments } from "../services/appointmentService";
+import { loginUser, registerUser } from "../services/authService";
 
-// Future
-// import {
-//   loginUser,
-//   registerUser,
-//   getProfile,
-// } from "../services/authService";
+// Future:
+// import { getCurrentUser } from "../services/authService";
 
 export const AuthContext = createContext();
 
@@ -18,11 +15,37 @@ const AuthContextProvider = ({ children }) => {
   // Authentication State
   // ==========================================================
 
+  /*
+  CURRENT:
+
+  Temporary userData is being used.
+
+  FUTURE:
+
+  Once GET /api/user/profile is implemented:
+
+      const [user, setUser] = useState(null);
+
+  Then getCurrentUser() will populate this state.
+  */
+
   const [user, setUser] = useState(userData);
+
+  /*
+  JWT token of authenticated user.
+  */
 
   const [token, setToken] = useState("");
 
+  /*
+  User's appointments.
+  */
+
   const [appointments, setAppointments] = useState([]);
+
+  /*
+  Global loading state.
+  */
 
   const [loading, setLoading] = useState(false);
 
@@ -38,8 +61,7 @@ const AuthContextProvider = ({ children }) => {
 
       setAppointments(data);
     } catch (error) {
-      console.log(error);
-
+      console.log("Appointments Error:", error);
       throw error;
     } finally {
       setLoading(false);
@@ -51,23 +73,61 @@ const AuthContextProvider = ({ children }) => {
   // ==========================================================
 
   useEffect(() => {
-    /*
-    ==========================================================
+    const restoreSession = async () => {
+      try {
+        setLoading(true);
 
-    Future
+        // ----------------------------------------------------
+        // Get saved JWT from localStorage
+        // ----------------------------------------------------
 
-    const savedToken = localStorage.getItem("token");
+        const savedToken = localStorage.getItem("token");
 
-    if (!savedToken) return;
+        if (!savedToken) {
+          return;
+        }
 
-    setToken(savedToken);
+        setToken(savedToken);
 
-    fetchProfile(savedToken);
+        // ====================================================
+        // FUTURE:
+        // Get authenticated user profile
+        // ====================================================
 
-    ==========================================================
-    */
+        /*
+        const data = await getCurrentUser();
 
-    loadAppointments();
+        if (data.success) {
+          setUser(data.user);
+        }
+        */
+
+        // ====================================================
+        // FUTURE:
+        // Load appointments
+        // ====================================================
+
+        /*
+        await loadAppointments();
+        */
+      } catch (error) {
+        console.log("Session Restore Error:", error);
+
+        // ----------------------------------------------------
+        // FUTURE:
+        //
+        // If token is invalid or expired:
+        //
+        // localStorage.removeItem("token");
+        // setToken("");
+        // setUser(null);
+        // ----------------------------------------------------
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    restoreSession();
   }, []);
 
   // ==========================================================
@@ -78,31 +138,19 @@ const AuthContextProvider = ({ children }) => {
     try {
       setLoading(true);
 
-      /*
-      ==========================================================
-
-      Future
-
       const data = await loginUser(formData);
 
-      setUser(data.user);
+      if (!data.success) {
+        throw new Error(data.message);
+      }
 
       setToken(data.token);
 
-      localStorage.setItem(
-        "token",
-        data.token
-      );
+      localStorage.setItem("token", data.token);
 
-      await loadAppointments();
-
-      ==========================================================
-      */
-
-      console.log("Login:", formData);
+      return data;
     } catch (error) {
-      console.log(error);
-
+      console.log("Login Error:", error);
       throw error;
     } finally {
       setLoading(false);
@@ -117,29 +165,19 @@ const AuthContextProvider = ({ children }) => {
     try {
       setLoading(true);
 
-      /*
-      ==========================================================
-
-      Future
-
       const data = await registerUser(formData);
 
-      setUser(data.user);
+      if (!data.success) {
+        throw new Error(data.message);
+      }
 
       setToken(data.token);
 
-      localStorage.setItem(
-        "token",
-        data.token
-      );
+      localStorage.setItem("token", data.token);
 
-      ==========================================================
-      */
-
-      console.log("Register:", formData);
+      return data;
     } catch (error) {
-      console.log(error);
-
+      console.log("Register Error:", error);
       throw error;
     } finally {
       setLoading(false);
@@ -152,20 +190,18 @@ const AuthContextProvider = ({ children }) => {
 
   const logout = () => {
     setUser(null);
-
     setToken("");
-
     setAppointments([]);
-
-    /*
-    ==========================================================
-
-    Future
 
     localStorage.removeItem("token");
 
-    ==========================================================
-    */
+    // ========================================================
+    // FUTURE:
+    //
+    // If server-side session invalidation is implemented:
+    //
+    // await logoutUser();
+    // ========================================================
   };
 
   // ==========================================================
@@ -173,25 +209,38 @@ const AuthContextProvider = ({ children }) => {
   // ==========================================================
 
   const value = {
+    // --------------------------------------------------------
     // State
+    // --------------------------------------------------------
+
     user,
     token,
     appointments,
     loading,
 
+    // --------------------------------------------------------
     // Setters
+    // --------------------------------------------------------
+
     setUser,
     setToken,
     setAppointments,
 
+    // --------------------------------------------------------
     // Actions
+    // --------------------------------------------------------
+
     login,
     register,
     logout,
     loadAppointments,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export default AuthContextProvider;
