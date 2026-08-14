@@ -1,52 +1,65 @@
 import axios from "axios";
 
 const api = axios.create({
-    // Backend URL
-    baseURL: import.meta.env.VITE_API_URL,
-    timeout: 10000,
+    baseURL: import.meta.env.VITE_BACKEND_URL,
+    timeout: 5000,
     headers: {
         "Content-Type": "application/json"
     }
 });
 
-
-
 // Request Interceptor
-// Automatically Adds Token
 api.interceptors.request.use(
-
-    //on success
     (config) => {
-        // Future
+        const aToken = localStorage.getItem("aToken");
 
-        // const token=localStorage.getItem("token");
-        // if(token){
-        // config.headers.Authorization=`Bearer ${token}`
-        // }
+        if (aToken) {
+            config.headers.Authorization = `Bearer ${aToken}`;
+        }
 
         return config;
     },
 
-    // on error
     (error) => Promise.reject(error)
 );
 
 
-
-
-// Response Interceptor
 // Response Interceptor
 api.interceptors.response.use(
-    //on success
     (response) => response,
 
-    //on error
     (error) => {
+        const status = error.response?.status;
 
-        // Future
-        // 401
-        // Refresh Token
-        // Logout User
+        // Network / server unreachable
+        if (!error.response) {
+            if (error.code === "ECONNABORTED") {
+                console.log("Request timed out");
+            } else {
+                console.log("Network error / server unreachable");
+            }
+
+            return Promise.reject(error);
+        }
+
+        // HTTP errors
+        switch (status) {
+            case 401:
+                console.log("Unauthorized");
+                // logout / refresh token later
+                break;
+
+            case 403:
+                console.log("Forbidden");
+                break;
+
+            case 500:
+                console.log("Internal server error");
+                break;
+
+            default:
+                console.log(`HTTP Error: ${status}`);
+        }
 
         return Promise.reject(error);
     }

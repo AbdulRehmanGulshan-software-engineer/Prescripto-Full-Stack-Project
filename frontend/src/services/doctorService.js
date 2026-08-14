@@ -1,26 +1,36 @@
 import api from "../lib/axios";
 
-import { doctors as dummyDoctors } from "../assets/assets";
-
-// GET ALL DOCTORS
-export const getDoctors = async () => {
+// GET ALL DOCTORS - PAGINATED
+export const getDoctors = async ({
+  page = 1,
+  limit = 10,
+  available,
+  speciality,
+} = {}) => {
   try {
-    // const response = await api.get("/doctors");
-    // return response.data;
+    console.log("I'm Backend, Calling List API")
+    const response = await api.get("/api/doctor/list", {
+      params: {
+        page,
+        limit,
+        available,
+        speciality,
+      },
+    });
 
-    return dummyDoctors;
+    return response.data;
   } catch (error) {
     throw error;
   }
 };
 
+
 // GET SINGLE DOCTOR
 export const getDoctorById = async (doctorId) => {
   try {
-    // const response = await api.get(`/doctors/${doctorId}`);
-    // return response.data;
+    const response = await api.get(`/api/doctor/${doctorId}`);
 
-    return dummyDoctors.find((doctor) => doctor._id === doctorId);
+    return response.data;
   } catch (error) {
     throw error;
   }
