@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useForm } from "react-hook-form";
@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "../schemas/loginSchema";
 import { useAuth } from "../context/useAuth";
 import { toast } from "react-toastify";
+// const { token } = useAuth();
 
 const Login = () => {
   const navigate = useNavigate();
@@ -32,19 +33,14 @@ const Login = () => {
   // Submit Form
   const onSubmit = async (formData) => {
     try {
-      const data = await login(formData);
-
+      await login(formData);
       toast.success("Login successful!");
-
-      // console.log("Login Successful:", data);
-
       reset();
-
-      // Future
-      // navigate("/");
+      navigate("/", {
+        replace: true,
+      });
     } catch (error) {
       console.error(error);
-
       toast.error(error.message || "Login failed");
     }
   };
