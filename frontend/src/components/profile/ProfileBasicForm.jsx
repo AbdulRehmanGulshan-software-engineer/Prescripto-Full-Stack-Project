@@ -45,9 +45,10 @@ const ProfileBasicForm = ({ user, setUser }) => {
               py-2
             "
           >
-            <option>Male</option>
-            <option>Female</option>
-            <option>Other</option>
+            <option value="Not Selected">Not Selected</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
           </select>
         </div>
 

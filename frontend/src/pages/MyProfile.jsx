@@ -11,10 +11,7 @@ const MyProfile = () => {
 
   const navigate = useNavigate();
 
-  // ==========================
   // Safety Check
-  // ==========================
-
   if (!user) {
     return (
       <div className="py-10 text-center">Please login to view profile.</div>

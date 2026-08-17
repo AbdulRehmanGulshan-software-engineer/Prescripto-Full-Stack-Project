@@ -19,10 +19,12 @@ text-gray-500
 
       <div className="mt-5 space-y-5 text-gray-700">
         <InfoRow label="Email" value={user.email} />
-
         <InfoRow label="Phone" value={user.phone} />
 
-        <InfoRow label="Address" value={user.address} />
+        <InfoRow
+          label="Address"
+          value={`${user.address?.line1}, ${user.address?.line2}`}
+        />
       </div>
 
       {/* Basic Information */}

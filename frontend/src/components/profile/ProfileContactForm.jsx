@@ -54,26 +54,57 @@ const ProfileContactForm = ({ user, setUser }) => {
         </Row>
 
         <Row label="Address">
-          <textarea
-            rows={3}
-            value={user.address}
-            onChange={(e) =>
-              setUser({
-                ...user,
-                address: e.target.value,
-              })
-            }
-            className="
-              w-full
-              sm:w-96
-              border
-              rounded-lg
-              px-4
-              py-2
-              resize-none
-              outline-none
-            "
-          />
+          <div className="w-full sm:w-96 space-y-3">
+            
+            {/* Address Line 1 */}
+            <input
+              type="text"
+              placeholder="Address Line 1"
+              value={user.address?.line1 || ""}
+              onChange={(e) =>
+                setUser({
+                  ...user,
+                  address: {
+                    ...user.address,
+                    line1: e.target.value,
+                  },
+                })
+              }
+              className="
+                w-full
+                border
+                rounded-lg
+                px-4
+                py-2
+                outline-none
+              "
+            />
+
+            {/* Address Line 2 */}
+            <input
+              type="text"
+              placeholder="Address Line 2"
+              value={user.address?.line2 || ""}
+              onChange={(e) =>
+                setUser({
+                  ...user,
+                  address: {
+                    ...user.address,
+                    line2: e.target.value,
+                  },
+                })
+              }
+              className="
+                w-full
+                border
+                rounded-lg
+                px-4
+                py-2
+                outline-none
+              "
+            />
+
+          </div>
         </Row>
       </div>
     </>

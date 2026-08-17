@@ -3,18 +3,25 @@ import api from "../lib/axios";
 // UPDATE PROFILE
 export const updateProfile = async (profileData) => {
   try {
-    // const response = await api.put(
-    //   "/user/profile",
-    //   profileData
-    // );
+    const formData = new FormData();
 
-    // return response.data;
+    formData.append("name", profileData.name);
+    formData.append("phone", profileData.phone);
+    formData.append("address", JSON.stringify(profileData.address));
+    formData.append("dob", profileData.dob);
+    formData.append("gender", profileData.gender);
 
-    console.log(profileData);
+    // Actual image file
+    if (profileData.imageFile) {
+      formData.append("image", profileData.imageFile);
+    }
 
-    return {
-      success: true,
-    };
+    const response = await api.post(
+      "/api/user/update-profile",
+      formData
+    );
+
+    return response.data;
   } catch (error) {
     throw error;
   }

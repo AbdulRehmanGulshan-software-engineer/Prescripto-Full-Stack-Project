@@ -38,33 +38,14 @@ export const loginUser = async (credentials) => {
 };
 
 
-// ==========================================================
 // GET CURRENT USER
-// ==========================================================
-
 export const getCurrentUser = async () => {
   try {
-
-    // FUTURE:
-    //
-    // Backend:
-    //
-    // GET /api/user/profile
-    //
-    // Axios interceptor automatically adds:
-    //
-    // Authorization: Bearer <aToken>
-
-    /*
     const response = await api.get(
-      "/api/user/profile"
+      "/api/user/get-profile"
     );
 
     return response.data;
-    */
-
-    return null;
-
   } catch (error) {
     throw error;
   }

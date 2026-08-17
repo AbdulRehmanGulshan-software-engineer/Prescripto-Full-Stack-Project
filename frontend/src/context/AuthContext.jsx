@@ -3,7 +3,11 @@ import { createContext, useEffect, useState } from "react";
 import { userData } from "../assets/assets";
 
 import { getUserAppointments } from "../services/appointmentService";
-import { loginUser, registerUser } from "../services/authService";
+import {
+  getCurrentUser,
+  loginUser,
+  registerUser,
+} from "../services/authService";
 
 export const AuthContext = createContext(null);
 
@@ -12,7 +16,7 @@ const AuthContextProvider = ({ children }) => {
   // Authentication State
   // ==========================================================
 
-  const [user, setUser] = useState(userData);
+  const [user, setUser] = useState({});
 
   /*
     JWT token of authenticated user.
@@ -52,17 +56,10 @@ const AuthContextProvider = ({ children }) => {
         // Restore token into React state
         setToken(savedToken);
 
-        /*
-          FUTURE:
-
-          Once backend profile endpoint exists:
-
-          const data = await getCurrentUser();
-
-          if (data.success) {
-            setUser(data.user);
-          }
-        */
+        const data = await getCurrentUser();
+        if (data.success) {
+          setUser(data.userData);
+        }
       } catch (error) {
         console.error("Session Restore Error:", error);
 

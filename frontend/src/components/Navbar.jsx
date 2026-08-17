@@ -7,7 +7,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   // User authentication state/actions
-  const { token, logout } = useAuth();
+  const { token, logout, user } = useAuth();
 
   const [showMenu, setShowMenu] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -100,8 +100,8 @@ const Navbar = () => {
               {token ? (
                 <div className="relative group flex items-center gap-2 cursor-pointer">
                   <img
-                    className="w-8 rounded-full"
-                    src={assets.profile_pic}
+                    className="w-9 h-9 rounded-full"
+                    src={user?.image || assets.profile_pic}
                     alt="Profile"
                   />
 

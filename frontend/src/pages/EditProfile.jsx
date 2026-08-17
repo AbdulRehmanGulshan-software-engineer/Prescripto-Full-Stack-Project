@@ -9,48 +9,47 @@ import ProfileContactForm from "../components/profile/ProfileContactForm";
 import ProfileBasicForm from "../components/profile/ProfileBasicForm";
 import ProfileActions from "../components/profile/ProfileActions";
 
+import { toast } from "react-toastify";
+import { getCurrentUser } from "../services/authService";
+
 const EditProfile = () => {
   const { user, setUser } = useAuth();
 
   const navigate = useNavigate();
 
-  // ==============================
   // Safety Check
-  // ==============================
-
   if (!user) {
     return (
       <div className="py-10 text-center">Please login to edit profile.</div>
     );
   }
 
-  // ==============================
   // Save Profile
-  // ==============================
-
   const handleSave = async () => {
     try {
-      /*
-      =======================================
-      FUTURE BACKEND FLOW
-
-      userService
-          |
-          |
-          v
-
-      PUT /user/profile
-
-      =======================================
-      */
-
       const response = await updateProfile(user);
 
-      console.log("Profile Updated:", response);
+      if (response.success) {
+        // Get fresh user data from backend
+        const userResponse = await getCurrentUser();
 
-      navigate("/my-profile");
+        if (userResponse.success) {
+          setUser(userResponse.userData);
+        }
+
+        toast.success("Profile updated successfully!");
+
+        navigate("/my-profile");
+      } else {
+        toast.error(response.message || "Profile update failed");
+      }
     } catch (error) {
       console.log(error);
+
+      toast.error(
+        error.response?.data?.message ||
+          "Something went wrong. Please try again.",
+      );
     }
   };
 

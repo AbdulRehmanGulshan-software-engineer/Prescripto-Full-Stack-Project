@@ -1,42 +1,34 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const ProfileImageInput = ({ user, setUser }) => {
+  const [preview, setPreview] = useState(user.image);
+
+  // Sync preview when user.image changes after API update
+  useEffect(() => {
+    setPreview(user.image);
+  }, [user.image]);
+
   const handleImageChange = (event) => {
     const file = event.target.files[0];
 
     if (!file) return;
 
-    /*
-    =======================================
-    
-    CURRENT:
-
-    Browser preview using URL
-
-
-    FUTURE:
-
-    Upload image API
-
-    FormData()
-    POST /user/profile/image
-
-
-    =======================================
-    */
-
     const imageUrl = URL.createObjectURL(file);
 
+    // Show selected image immediately on edit page
+    setPreview(imageUrl);
+
+    // Store actual file for API upload
     setUser({
       ...user,
-      image: imageUrl,
+      imageFile: file,
     });
   };
 
   return (
     <div className="flex flex-col gap-3">
       <img
-        src={user.image}
+        src={preview}
         alt={user.name}
         className="
           w-32
@@ -57,6 +49,7 @@ const ProfileImageInput = ({ user, setUser }) => {
         "
       >
         Change Profile Picture
+
         <input
           type="file"
           accept="image/*"

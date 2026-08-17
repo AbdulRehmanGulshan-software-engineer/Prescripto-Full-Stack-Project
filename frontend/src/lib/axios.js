@@ -4,9 +4,6 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
   timeout: 5000,
 
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 // ==========================================================
@@ -32,7 +29,7 @@ api.interceptors.request.use(
     // ======================================================
 
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers.token = token;
     }
 
     return config;
