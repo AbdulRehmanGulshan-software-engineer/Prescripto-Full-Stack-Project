@@ -6,8 +6,8 @@
 //
 // - Register user
 // - Login user
-// - Get profile        -> FUTURE
-// - Update profile     -> FUTURE
+// - Get profile
+// - Update profile
 // - Get appointments   -> FUTURE / separate controller
 // - Cancel appointment -> FUTURE / separate controller
 // - Payment gateway    -> FUTURE
@@ -18,23 +18,15 @@ import validator from "validator";
 import bcrypt from "bcrypt";
 import userModel from "../models/userModel.js";
 import jwt from "jsonwebtoken";
+import { v2 as cloudinary } from 'cloudinary'
 
-// ==========================================================
 // REGISTER USER
-// ==========================================================
-
 const registerUser = async (req, res) => {
     try {
-        // ------------------------------------------------------
         // Get data from request body
-        // ------------------------------------------------------
-
         const { name, email, password } = req.body;
 
-        // ------------------------------------------------------
         // Check missing details
-        // ------------------------------------------------------
-
         if (!name || !email || !password) {
             return res.json({
                 success: false,
@@ -42,10 +34,7 @@ const registerUser = async (req, res) => {
             });
         }
 
-        // ------------------------------------------------------
         // Validate email
-        // ------------------------------------------------------
-
         if (!validator.isEmail(email)) {
             return res.json({
                 success: false,
@@ -53,10 +42,7 @@ const registerUser = async (req, res) => {
             });
         }
 
-        // ------------------------------------------------------
         // Validate password
-        // ------------------------------------------------------
-
         if (password.length < 8) {
             return res.json({
                 success: false,
@@ -64,10 +50,7 @@ const registerUser = async (req, res) => {
             });
         }
 
-        // ------------------------------------------------------
         // Check if user already exists
-        // ------------------------------------------------------
-
         const existingUser = await userModel.findOne({ email });
 
         if (existingUser) {
@@ -77,10 +60,7 @@ const registerUser = async (req, res) => {
             });
         }
 
-        // ------------------------------------------------------
         // Hash password
-        // ------------------------------------------------------
-
         const salt = await bcrypt.genSalt(10);
 
         const hashedPassword = await bcrypt.hash(
@@ -88,38 +68,23 @@ const registerUser = async (req, res) => {
             salt
         );
 
-        // ------------------------------------------------------
         // Create user data
-        // ------------------------------------------------------
-
         const userData = {
             name,
             email,
             password: hashedPassword,
         };
 
-        // ------------------------------------------------------
         // Create user
-        // ------------------------------------------------------
-
         const newUser = new userModel(userData);
 
-        // ------------------------------------------------------
         // Save user to database
-        // ------------------------------------------------------
-
         const user = await newUser.save();
 
-        // ------------------------------------------------------
         // Generate JWT
-        //
         // We only store the user's MongoDB ID inside JWT.
-        //
         // Later authentication middleware can decode this:
-        //
         // req.user.id
-        // ------------------------------------------------------
-
         const token = jwt.sign(
             {
                 id: user._id,
@@ -130,15 +95,11 @@ const registerUser = async (req, res) => {
             }
         );
 
-        // ------------------------------------------------------
         // Send response
-        //
         // CURRENTLY we return only token.
-        //
-        // We are NOT returning user here because your current
+        // We are NOT returning user here because our current
         // frontend architecture will get the user through
         // the future getProfile API.
-        // ------------------------------------------------------
 
         return res.json({
             success: true,
@@ -155,22 +116,13 @@ const registerUser = async (req, res) => {
     }
 };
 
-// ==========================================================
 // LOGIN USER
-// ==========================================================
-
 const loginUser = async (req, res) => {
     try {
-        // ------------------------------------------------------
         // Get email and password from request body
-        // ------------------------------------------------------
-
         const { email, password } = req.body;
 
-        // ------------------------------------------------------
         // Check missing details
-        // ------------------------------------------------------
-
         if (!email || !password) {
             return res.json({
                 success: false,
@@ -178,16 +130,10 @@ const loginUser = async (req, res) => {
             });
         }
 
-        // ------------------------------------------------------
         // Find user by email
-        // ------------------------------------------------------
-
         const user = await userModel.findOne({ email });
 
-        // ------------------------------------------------------
         // User does not exist
-        // ------------------------------------------------------
-
         if (!user) {
             return res.json({
                 success: false,
@@ -195,7 +141,6 @@ const loginUser = async (req, res) => {
             });
         }
 
-        // ------------------------------------------------------
         // Compare password
         //
         // Plain password from frontend
@@ -203,17 +148,12 @@ const loginUser = async (req, res) => {
         // bcrypt.compare()
         //        ↓
         // Hashed password from MongoDB
-        // ------------------------------------------------------
-
         const isMatch = await bcrypt.compare(
             password,
             user.password
         );
 
-        // ------------------------------------------------------
         // Password incorrect
-        // ------------------------------------------------------
-
         if (!isMatch) {
             return res.json({
                 success: false,
@@ -221,10 +161,7 @@ const loginUser = async (req, res) => {
             });
         }
 
-        // ------------------------------------------------------
         // Generate JWT
-        // ------------------------------------------------------
-
         const token = jwt.sign(
             {
                 id: user._id,
@@ -235,10 +172,7 @@ const loginUser = async (req, res) => {
             }
         );
 
-        // ------------------------------------------------------
         // Login successful
-        // ------------------------------------------------------
-
         return res.json({
             success: true,
             token,
@@ -254,4 +188,98 @@ const loginUser = async (req, res) => {
     }
 };
 
-export { registerUser, loginUser };
+// API TO GET USER PROFILE DATA
+const getProfile = async (req, res) => {
+    try {
+        // Get user ID added by authUser middleware (wo khud token ka use kr ke add kr rha hai req me hamari)
+        const userId = req.userId;
+
+        // Find user by ID
+        const userData = await userModel
+            .findById(userId)
+            .select("-password");
+
+        if (!userData) {
+            return res.json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        return res.json({
+            success: true,
+            userData
+        });
+
+    } catch (error) {
+        console.log(error);
+
+        return res.json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+// API TO UPDATE PROFILE
+const updateProfile = async (req, res) => {
+    try {
+        const { name, phone, address, dob, gender } = req.body;
+        const userId = req.userId;
+        const imageFile = req.file;
+
+        if (!name || !phone || !address || !dob || !gender) {
+            return res.json({
+                success: false,
+                message: "Data Missing"
+            });
+        }
+
+        await userModel.findByIdAndUpdate(
+            userId,
+            {
+                name,
+                phone,
+                address: JSON.parse(address),
+                dob,
+                gender
+            }
+        );
+
+        // If there is an image
+        if (imageFile) {
+            // Upload image to Cloudinary
+            const imageUpload = await cloudinary.uploader.upload(
+                imageFile.path,
+                {
+                    resource_type: "image"
+                }
+            );
+
+            const imageURL = imageUpload.secure_url;
+
+            // Save image URL in MongoDB
+            await userModel.findByIdAndUpdate(
+                userId,
+                {
+                    image: imageURL
+                }
+            );
+        }
+
+        return res.json({
+            success: true,
+            message: "Profile Updated"
+        });
+
+    } catch (error) {
+        console.log(error);
+
+        return res.json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+export { registerUser, loginUser, getProfile, updateProfile };
