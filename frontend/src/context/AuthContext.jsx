@@ -1,7 +1,5 @@
 import { createContext, useEffect, useState } from "react";
 
-import { userData } from "../assets/assets";
-
 import { getUserAppointments } from "../services/appointmentService";
 import {
   getCurrentUser,
@@ -16,28 +14,43 @@ const AuthContextProvider = ({ children }) => {
   // Authentication State
   // ==========================================================
 
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState(null);
 
-  /*
-    JWT token of authenticated user.
-
-    Empty string means:
-    user is not authenticated.
-  */
   const [token, setToken] = useState("");
 
-  /*
-    User appointments.
-  */
   const [appointments, setAppointments] = useState([]);
 
-  /*
-    IMPORTANT:
-
-    Start with true because we need to check localStorage
-    before deciding whether the user is authenticated.
-  */
   const [loading, setLoading] = useState(true);
+
+  // ==========================================================
+  // Get Current User
+  // ==========================================================
+
+  const loadUser = async () => {
+    try {
+      const data = await getCurrentUser();
+
+      if (data.success) {
+        setUser(data.userData);
+        return data;
+      }
+
+      // Token is invalid
+      setUser(null);
+      setToken("");
+      localStorage.removeItem("token");
+
+      return data;
+    } catch (error) {
+      console.error("Get Current User Error:", error);
+
+      setUser(null);
+      setToken("");
+      localStorage.removeItem("token");
+
+      throw error;
+    }
+  };
 
   // ==========================================================
   // Restore Session
@@ -48,28 +61,17 @@ const AuthContextProvider = ({ children }) => {
       try {
         const savedToken = localStorage.getItem("token");
 
-        // No saved token
         if (!savedToken) {
           return;
         }
 
-        // Restore token into React state
+        // Restore token
         setToken(savedToken);
 
-        const data = await getCurrentUser();
-        if (data.success) {
-          setUser(data.userData);
-        }
+        // Get user data from backend
+        await loadUser();
       } catch (error) {
         console.error("Session Restore Error:", error);
-
-        /*
-          If token becomes invalid/expired in future:
-
-          localStorage.removeItem("token");
-          setToken("");
-          setUser(null);
-        */
       } finally {
         setLoading(false);
       }
@@ -111,15 +113,18 @@ const AuthContextProvider = ({ children }) => {
         throw new Error(data.message || "Login failed");
       }
 
-      /*
-        Save token in React state
-      */
+      // Save token
       setToken(data.token);
 
-      /*
-        Persist token so authentication survives refresh
-      */
+      // Persist token
       localStorage.setItem("token", data.token);
+
+      // Get complete user profile from backend
+      const profileData = await getCurrentUser();
+
+      if (profileData.success) {
+        setUser(profileData.userData);
+      }
 
       return data;
     } catch (error) {
@@ -144,14 +149,18 @@ const AuthContextProvider = ({ children }) => {
         throw new Error(data.message || "Registration failed");
       }
 
-      /*
-        If backend automatically logs the user in after
-        registration and returns a JWT:
-      */
-
+      // Save token
       setToken(data.token);
 
+      // Persist token
       localStorage.setItem("token", data.token);
+
+      // Get complete user profile from backend
+      const profileData = await getCurrentUser();
+
+      if (profileData.success) {
+        setUser(profileData.userData);
+      }
 
       return data;
     } catch (error) {
@@ -167,24 +176,12 @@ const AuthContextProvider = ({ children }) => {
   // ==========================================================
 
   const logout = () => {
-    /*
-      Clear React authentication state
-    */
     setToken("");
 
-    /*
-      Clear user state
-    */
     setUser(null);
 
-    /*
-      Clear appointments
-    */
     setAppointments([]);
 
-    /*
-      Remove persisted JWT
-    */
     localStorage.removeItem("token");
   };
 
@@ -206,6 +203,7 @@ const AuthContextProvider = ({ children }) => {
     register,
     logout,
     loadAppointments,
+    loadUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../context/useAuth";
@@ -17,6 +17,12 @@ const EditProfile = () => {
 
   const navigate = useNavigate();
 
+  // Local draft state
+  const [draftUser, setDraftUser] = useState(() => ({
+    ...user,
+    address: user?.address ? { ...user.address } : {},
+  }));
+
   // Safety Check
   if (!user) {
     return (
@@ -27,14 +33,18 @@ const EditProfile = () => {
   // Save Profile
   const handleSave = async () => {
     try {
-      const response = await updateProfile(user);
+      const response = await updateProfile(draftUser);
 
       if (response.success) {
         // Get fresh user data from backend
         const userResponse = await getCurrentUser();
 
         if (userResponse.success) {
+          // Update global user only after successful save
           setUser(userResponse.userData);
+
+          // Update local draft as well
+          setDraftUser(userResponse.userData);
         }
 
         toast.success("Profile updated successfully!");
@@ -53,21 +63,33 @@ const EditProfile = () => {
     }
   };
 
+  // Cancel changes
+  const handleCancel = () => {
+    // Discard local changes
+    setDraftUser({
+      ...user,
+      address: user?.address ? { ...user.address } : {},
+    });
+
+    // Go back without modifying global user
+    navigate("/my-profile");
+  };
+
   return (
     <div className="w-full max-w-4xl mx-auto px-4 py-6">
       {/* ================= Image ================= */}
 
-      <ProfileImageInput user={user} setUser={setUser} />
+      <ProfileImageInput user={draftUser} setUser={setDraftUser} />
 
       {/* ================= Name ================= */}
 
       <div className="mt-6">
         <input
           type="text"
-          value={user.name}
+          value={draftUser.name || ""}
           onChange={(e) =>
-            setUser({
-              ...user,
+            setDraftUser({
+              ...draftUser,
               name: e.target.value,
             })
           }
@@ -87,18 +109,15 @@ const EditProfile = () => {
 
       {/* ================= Contact ================= */}
 
-      <ProfileContactForm user={user} setUser={setUser} />
+      <ProfileContactForm user={draftUser} setUser={setDraftUser} />
 
       {/* ================= Basic Info ================= */}
 
-      <ProfileBasicForm user={user} setUser={setUser} />
+      <ProfileBasicForm user={draftUser} setUser={setDraftUser} />
 
       {/* ================= Actions ================= */}
 
-      <ProfileActions
-        onCancel={() => navigate("/my-profile")}
-        onSave={handleSave}
-      />
+      <ProfileActions onCancel={handleCancel} onSave={handleSave} />
     </div>
   );
 };

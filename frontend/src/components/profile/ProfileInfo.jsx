@@ -23,7 +23,11 @@ text-gray-500
 
         <InfoRow
           label="Address"
-          value={`${user.address?.line1}, ${user.address?.line2}`}
+          value={
+            user.address.line1
+              ? `${user.address?.line1}, ${user.address?.line2}`
+              : ""
+          }
         />
       </div>
 
