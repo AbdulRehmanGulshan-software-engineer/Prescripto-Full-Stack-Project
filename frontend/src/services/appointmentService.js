@@ -1,27 +1,16 @@
 import api from "../lib/axios";
 import { dummyAppointments } from "../assets/assets";
 
-/*
-==========================================================
-Appointment Service
+// Current:
+// - Book Appointment → Real Backend API
+// - Get Appointments → Dummy Data
+// - Cancel Appointment → Dummy Response
 
-Only communicates with API.
+// Future:
+// - Get Appointments → Backend API
+// - Cancel Appointment → Backend API
 
-UI Components should NEVER call axios directly.
-
-Current:
-Dummy Data
-
-Future:
-Backend API
-
-==========================================================
-*/
-
-/* ==========================================================
-   Get Logged In User Appointments
-========================================================== */
-
+//  Get Logged In User Appointments
 export const getUserAppointments = async () => {
   try {
     /*
@@ -42,40 +31,21 @@ export const getUserAppointments = async () => {
   }
 };
 
-/* ==========================================================
-   Book Appointment
-========================================================== */
-
+//  Book Appointment
 export const bookAppointment = async (appointmentData) => {
   try {
-    /*
-    ===========================================
-    Future API
-
     const { data } = await api.post(
-      "/appointments",
+      "/api/user/book-appointment",
       appointmentData
     );
 
     return data;
-    ===========================================
-    */
-
-    console.log("Book Appointment:", appointmentData);
-
-    return {
-      success: true,
-      message: "Appointment booked successfully.",
-    };
   } catch (error) {
     throw error;
   }
 };
 
-/* ==========================================================
-   Cancel Appointment
-========================================================== */
-
+//  Cancel Appointment
 export const cancelAppointment = async (appointmentId) => {
   try {
     /*
