@@ -1,7 +1,11 @@
+// for now i have not followed services->lib architecture here
+
 import { useContext, useState } from "react";
 import { AdminContext } from "../context/AdminContext";
+import { DoctorContext } from "../context/DoctorContext";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [state, setState] = useState("Admin");
@@ -10,6 +14,9 @@ const Login = () => {
   const [password, setPassword] = useState("");
 
   const { setAToken, backendUrl } = useContext(AdminContext);
+  const { setDToken } = useContext(DoctorContext);
+
+  const navigate = useNavigate();
 
   const OnSubmitHandler = async (event) => {
     event.preventDefault();
@@ -20,16 +27,39 @@ const Login = () => {
           email,
           password,
         });
+
         if (data.success) {
-          // saving in local storage
           localStorage.setItem("aToken", data.token);
           setAToken(data.token);
+
+          toast.success("Admin login successful");
+
+          navigate("/admin-dashboard");
         } else {
           toast.error(data.message);
         }
       } else {
+        const { data } = await axios.post(backendUrl + "/api/doctor/login", {
+          email,
+          password,
+        });
+
+        if (data.success) {
+          localStorage.setItem("dToken", data.dToken);
+          setDToken(data.dToken);
+
+          toast.success("Doctor login successful");
+
+          navigate("/doctor-dashboard");
+        } else {
+          toast.error(data.message);
+        }
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+
+      toast.error(error.response?.data?.message || "Something went wrong");
+    }
   };
 
   return (
@@ -38,8 +68,10 @@ const Login = () => {
         <p className="text-2xl font-semibold m-auto">
           <span className="text-primary">{state}</span> Login
         </p>
-        <div className="w-full ">
+
+        <div className="w-full">
           <p>Email</p>
+
           <input
             onChange={(e) => setEmail(e.target.value)}
             value={email}
@@ -48,8 +80,10 @@ const Login = () => {
             required
           />
         </div>
+
         <div className="w-full">
           <p>Password</p>
+
           <input
             onChange={(e) => setPassword(e.target.value)}
             value={password}
@@ -58,9 +92,14 @@ const Login = () => {
             required
           />
         </div>
-        <button className="bg-primary text-white w-full py-2 rounded-md text-base">
+
+        <button
+          type="submit"
+          className="bg-primary text-white w-full py-2 rounded-md text-base"
+        >
           Login
         </button>
+
         {state === "Admin" ? (
           <p>
             Doctor Login{" "}

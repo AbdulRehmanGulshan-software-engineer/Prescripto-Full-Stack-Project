@@ -1,3 +1,5 @@
+// Ye context admin authentication/global admin data handle kar raha hai
+
 import { createContext, useState } from "react";
 
 export const AdminContext = createContext();

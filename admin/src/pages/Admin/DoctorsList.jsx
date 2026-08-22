@@ -9,16 +9,29 @@ import Pagination from "../../components/Pagination";
 const LIMIT = 10;
 
 const DoctorsList = () => {
-  const { doctors, loading, error, pagination, getDoctors } = useAdminDoctors();
+  const {
+    doctors,
+    loading,
+    error,
+    pagination,
+    getDoctors,
+    changeAvailability,
+  } = useAdminDoctors();
 
   const [page, setPage] = useState(1);
 
   // =====================================================
-  // FETCH DOCTORS
+  // FETCH DOCTORS + SCROLL TO TOP
   // =====================================================
 
   useEffect(() => {
     const controller = new AbortController();
+
+    // Scroll whenever page changes
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
 
     getDoctors(page, LIMIT, controller.signal);
 
@@ -32,18 +45,35 @@ const DoctorsList = () => {
   // =====================================================
 
   const handlePageChange = (newPage) => {
-    if (newPage < 1) return;
+    // Don't change page while loading
+    if (loading) {
+      return;
+    }
 
+    // Invalid page
+    if (newPage < 1) {
+      return;
+    }
+
+    // Page doesn't exist
     if (newPage > pagination.totalPages) {
       return;
     }
 
-    setPage(newPage);
+    // Already on this page
+    if (newPage === page) {
+      return;
+    }
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    setPage(newPage);
+  };
+
+  // =====================================================
+  // RETRY
+  // =====================================================
+
+  const handleRetry = () => {
+    getDoctors(page, LIMIT);
   };
 
   // =====================================================
@@ -51,12 +81,25 @@ const DoctorsList = () => {
   // =====================================================
 
   return (
-    <div className="min-w-0 w-full">
-      <h1 className="mb-5 text-[15px] font-medium text-[#262626]">
-        All Doctors
-      </h1>
+    <div className="m-5 w-full min-w-0 max-w-full">
+      {/* =================================================
+                HEADER
+            ================================================= */}
 
-      {/* ERROR */}
+      <div className="mb-5">
+        <h1 className="text-lg font-medium text-gray-800">All Doctors</h1>
+
+        {!loading && !error && (
+          <p className="mt-1 text-xs text-gray-400">
+            {pagination.totalDoctors}{" "}
+            {pagination.totalDoctors === 1 ? "doctor" : "doctors"}
+          </p>
+        )}
+      </div>
+
+      {/* =================================================
+                ERROR
+            ================================================= */}
 
       {!loading && error && (
         <div
@@ -66,7 +109,8 @@ const DoctorsList = () => {
                         min-w-0
                         items-center
                         justify-between
-                        rounded-md
+                        gap-3
+                        rounded-lg
                         border
                         border-red-200
                         bg-red-50
@@ -78,7 +122,7 @@ const DoctorsList = () => {
 
           <button
             type="button"
-            onClick={() => getDoctors(page, LIMIT)}
+            onClick={handleRetry}
             className="
                             ml-3
                             shrink-0
@@ -97,19 +141,21 @@ const DoctorsList = () => {
         </div>
       )}
 
-      {/* LOADING */}
+      {/* =================================================
+                LOADING
+            ================================================= */}
 
       {loading && (
         <div
           className="
                         grid
-                        min-w-0
                         w-full
+                        min-w-0
                         grid-cols-2
-                        gap-5
+                        gap-4
                         sm:grid-cols-3
                         md:grid-cols-4
-                        lg:grid-cols-5
+                        lg:grid-cols-4
                     "
         >
           {Array.from({
@@ -120,17 +166,19 @@ const DoctorsList = () => {
         </div>
       )}
 
-      {/* EMPTY */}
+      {/* =================================================
+                EMPTY
+            ================================================= */}
 
       {!loading && !error && doctors.length === 0 && (
         <div
           className="
                             flex
                             min-h-[300px]
-                            min-w-0
+                            w-full
                             items-center
                             justify-center
-                            rounded-md
+                            rounded-lg
                             border
                             border-dashed
                             border-gray-300
@@ -149,34 +197,43 @@ const DoctorsList = () => {
         </div>
       )}
 
-      {/* DOCTORS */}
+      {/* =================================================
+                DOCTORS
+            ================================================= */}
 
       {!loading && !error && doctors.length > 0 && (
         <div
           className="
                             grid
-                            min-w-0
                             w-full
+                            min-w-0
                             grid-cols-2
-                            gap-5
+                            gap-4
                             sm:grid-cols-3
                             md:grid-cols-4
-                            lg:grid-cols-5
+                            lg:grid-cols-4
                         "
         >
           {doctors.map((doctor) => (
-            <DoctorCard key={doctor._id} doctor={doctor} />
+            <DoctorCard
+              key={doctor._id}
+              doctor={doctor}
+              onAvailabilityChange={changeAvailability}
+            />
           ))}
         </div>
       )}
 
-      {/* PAGINATION */}
+      {/* =================================================
+                PAGINATION
+            ================================================= */}
 
       {!loading && !error && doctors.length > 0 && (
         <Pagination
           currentPage={page}
           totalPages={pagination.totalPages}
           hasMore={pagination.hasMore}
+          loading={loading}
           onPageChange={handlePageChange}
         />
       )}

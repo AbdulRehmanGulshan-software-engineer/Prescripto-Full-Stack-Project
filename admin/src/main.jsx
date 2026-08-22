@@ -9,14 +9,14 @@ import { AdminDoctorsProvider } from "./context/AdminDoctorsContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
-    <AdminDoctorsProvider>
-      <AdminContextProvider>
+    <AdminContextProvider>
+      <AdminDoctorsProvider>
         <DoctorContextProvider>
           <AppContextProvider>
             <App />
           </AppContextProvider>
         </DoctorContextProvider>
-      </AdminContextProvider>
-    </AdminDoctorsProvider>
+      </AdminDoctorsProvider>
+    </AdminContextProvider>
   </BrowserRouter>,
 );

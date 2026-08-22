@@ -1,17 +1,23 @@
-import { createContext } from "react";
+import { createContext, useState } from "react";
 
-export const DoctorContext = createContext()
+export const DoctorContext = createContext();
 
-const DoctorContextProvider = (props)=>{
-    const value = {
+const DoctorContextProvider = (props) => {
+  const [dToken, setDToken] = useState(localStorage.getItem("dToken") || "");
 
-    }
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-    return (
-        <DoctorContext.Provider value={value}>
-            {props.children}
-        </DoctorContext.Provider>
-    )
-}
+  const value = {
+    dToken,
+    setDToken,
+    backendUrl,
+  };
 
-export default DoctorContextProvider
+  return (
+    <DoctorContext.Provider value={value}>
+      {props.children}
+    </DoctorContext.Provider>
+  );
+};
+
+export default DoctorContextProvider;

@@ -1,3 +1,5 @@
+// ye context specifically doctors ki state aur doctor-related operations handle kar raha hai
+
 import { createContext, useCallback, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -82,9 +84,7 @@ export const AdminDoctorsProvider = ({ children }) => {
         ),
       );
 
-      toast.success(
-        "Availability Changed"
-      )
+      toast.success("Availability Changed");
 
       return data;
     } catch (err) {
